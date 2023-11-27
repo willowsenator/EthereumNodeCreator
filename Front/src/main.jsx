@@ -1,8 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-
+import {Home} from './componentes/Home'
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
-    <h1>ETHEREUM NODE CREATOR</h1>
+    <Home></Home>
   </React.StrictMode>
 )
