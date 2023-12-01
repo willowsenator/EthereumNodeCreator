@@ -1,3 +1,7 @@
+	SET ANSI_NULLS = ON;
+	SET NOCOUNT = ON;
+	SET QUOTED_IDENTIFIER = ON;
+	SET TRANSACTION ISOLATION LEVEL READ UNCOMMITTED;
 	SET statement_timeout = 0;
 	SET lock_timeout = 0;
 	SET client_encoding = 'UTF8';
