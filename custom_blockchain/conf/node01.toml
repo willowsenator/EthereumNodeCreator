@@ -1,6 +1,6 @@
 [Eth]
 NetworkId = 90000
-SyncMode = "snap"
+SyncMode = "full"
 EthDiscoveryURLs = []
 SnapDiscoveryURLs = []
 NoPruning = false
