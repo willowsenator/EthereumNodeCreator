@@ -22,8 +22,10 @@
 
     `geth init --datadir node03 genesis.json`
 
-*  Generar boot.key
-    
-    `bootnode -genkey boot.key`
-
 *  Vamos a crear un zip con la configuración inicial de la blockchain initial_config.zip para partir de una base
+
+### Iniciar nodos de la blockchain privada con GETH
+
+*  Iniciamos el resto de nodos
+
+### Iniciar nodos de la blockchain privada con Docker
