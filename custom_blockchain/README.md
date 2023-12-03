@@ -11,8 +11,8 @@
 *  Añadir cuenta con fondos y cuentas validoras en el genesis.json
     *  Cuenta con fondos
         *  Añadir la cuenta que queramos con fondos
-    *  Cuentas validadores añadirlas al extrada
-        *  Añadir cuentas validadoras sin 0x al script generate_extrada.py y obtener el extrada
+    *  Cuentas validadores añadirlas al extradata
+        *  Añadir cuentas validadoras sin 0x al script generate_extrada.py y obtener el extradata
 
 *  Inicializar genesis en cada nodo
 
@@ -23,8 +23,11 @@
     `geth init --datadir node03 genesis.json`
 
 * Creamos toml para especificar la configuración específica de cada nodo
+
     `geth --datadir node01 dumpconfig > conf/node01.toml`
+
     `geth --datadir node02 dumpconfig > conf/node02.toml`
+
     `geth --datadir node03 dumpconfig > conf/node03.toml`
 
 * Modificamos toml para especificar los modulos específicos y los puertos de los nodos
