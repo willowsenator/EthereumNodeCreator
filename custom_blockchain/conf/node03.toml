@@ -1,0 +1,102 @@
+[Eth]
+NetworkId = 90000
+SyncMode = "full"
+EthDiscoveryURLs = []
+SnapDiscoveryURLs = []
+NoPruning = false
+NoPrefetch = false
+TxLookupLimit = 2350000
+TransactionHistory = 2350000
+StateHistory = 90000
+LightPeers = 100
+DatabaseCache = 488
+DatabaseFreezer = ""
+TrieCleanCache = 146
+TrieDirtyCache = 244
+TrieTimeout = 3600000000000
+SnapshotCache = 97
+Preimages = false
+FilterLogCacheSize = 32
+EnablePreimageRecording = false
+RPCGasCap = 50000000
+RPCEVMTimeout = 5000000000
+RPCTxFeeCap = 1e+00
+
+[Eth.Miner]
+GasFloor = 0
+GasCeil = 30000000
+GasPrice = 1000000000
+Recommit = 2000000000
+NewPayloadTimeout = 2000000000
+
+[Eth.TxPool]
+Locals = []
+NoLocals = false
+Journal = "transactions.rlp"
+Rejournal = 3600000000000
+PriceLimit = 1
+PriceBump = 10
+AccountSlots = 16
+GlobalSlots = 5120
+AccountQueue = 64
+GlobalQueue = 1024
+Lifetime = 10800000000000
+
+[Eth.BlobPool]
+Datadir = "blobpool"
+Datacap = 10737418240
+PriceBump = 100
+
+[Eth.GPO]
+Blocks = 20
+Percentile = 60
+MaxHeaderHistory = 1024
+MaxBlockHistory = 1024
+MaxPrice = 500000000000
+IgnorePrice = 2
+
+[Node]
+DataDir = "node03"
+IPCPath = "geth.ipc"
+HTTPCors = ["*"]
+HTTPPort = 8549
+HTTPVirtualHosts = ["localhost"]
+HTTPModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
+AuthAddr = "localhost"
+AuthPort = 8553
+AuthVirtualHosts = ["localhost"]
+WSPort = 8550
+WSModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
+GraphQLVirtualHosts = ["localhost"]
+BatchRequestLimit = 1000
+BatchResponseMaxSize = 25000000
+
+[Node.P2P]
+MaxPeers = 50
+NoDiscovery = false
+DiscoveryV4 = true
+BootstrapNodes = []
+BootstrapNodesV5 = []
+StaticNodes = ["enode://7b7cb0d1a77e765c82477c47a68ca4c4ad6898b1bfb42c3e134eeeef3c1cb733b828974d6d2c65ef4f99c0f7530b078c199b651eae9b06beb41cc73122553d04@127.0.0.1:30303", "enode://1512ccd0e9451d245060bc4fc7635ee7b14139f668185e7caab24e1e355ede584007926a2de7c2a5063e84226b99ee216d3bb0d4ce42413d01c058ab3fef34db@127.0.0.1:30304","enode://ed4a5388fa885dcf3a2e8e3e9d1fe83bff006a3792ff2876ade1d94949993a3f11434e0b337d7345147af87241aa79281c2e6eddbe76198ce7cca1a4fe210fed@127.0.0.1:30305"]
+TrustedNodes = []
+ListenAddr = ":30305"
+DiscAddr = ""
+EnableMsgEvents = false
+
+[Node.HTTPTimeouts]
+ReadTimeout = 30000000000
+ReadHeaderTimeout = 30000000000
+WriteTimeout = 30000000000
+IdleTimeout = 120000000000
+
+[Metrics]
+HTTP = "127.0.0.1"
+Port = 6062
+InfluxDBEndpoint = "http://localhost:8088"
+InfluxDBDatabase = "geth"
+InfluxDBUsername = "test"
+InfluxDBPassword = "test"
+InfluxDBTags = "host=localhost"
+InfluxDBToken = "test"
+InfluxDBBucket = "geth"
+InfluxDBOrganization = "geth"
