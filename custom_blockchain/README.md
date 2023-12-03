@@ -22,6 +22,14 @@
 
     `geth init --datadir node03 genesis.json`
 
+* Creamos toml para especificar la configuración específica de cada nodo
+    `geth --datadir node01 dumpconfig > conf/node01.toml`
+    `geth --datadir node02 dumpconfig > conf/node02.toml`
+    `geth --datadir node03 dumpconfig > conf/node03.toml`
+
+* Modificamos toml para especificar los modulos específicos y los puertos de los nodos
+
+
 *  Vamos a crear un zip con la configuración inicial de la blockchain initial_config.zip para partir de una base
 
 ### Iniciar nodos de la blockchain privada con GETH
