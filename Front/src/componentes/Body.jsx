@@ -6,7 +6,6 @@ function Body() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Manejar el envío del formulario aquí
     console.log('Número de Red:', networkId);
   };
 
@@ -15,7 +14,7 @@ function Body() {
       <div className="network-form-container">
         <form onSubmit={handleSubmit} className="network-form">
           <div className="form-group">
-            <label htmlFor="networkId">Número de Red:</label>
+            <label htmlFor="networkId">Número de Nodos:</label>
             <input
               type="text"
               id="networkId"
