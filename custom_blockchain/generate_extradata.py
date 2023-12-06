@@ -1,27 +1,43 @@
-#Generate extradata for adding to genesis.json
+import argparse
 
-# Define the signer addresses
-signer_addresses = [
-    "8043e40446e8f377D2beC152fF4Bf471d12555FD",
-    "2d862b18BC5816B438c49931f8264926c2144190"
-    # Add more signer addresses here if needed
-]
 
-# Step 1: Concatenate 32 zero bytes
-zero_bytes_32 = "00" * 32
+# Generate extradata for adding to genesis.json
 
-# Step 2: Concatenate all signer addresses
-all_signer_addresses = ''.join(signer_addresses)
+def process(signer_addresses):
+    # Step 1: Concatenate 32 zero bytes
+    zero_bytes_32 = "00" * 32
 
-# Step 3: Concatenate 65 further zero bytes
-further_zero_bytes_65 = "00" * 65
+    # Step 2: Concatenate all signer addresses
+    all_signer_addresses = ''.join(signer_addresses)
 
-# Step 4: Combine all the strings
-encoded_extradata = zero_bytes_32 + all_signer_addresses + further_zero_bytes_65
+    # Step 3: Concatenate 65 further zero bytes
+    further_zero_bytes_65 = "00" * 65
 
-# Step 5: Use the result in genesis.json (replace "your_extradata_value" with the encoded_extradata)
-genesis_json = {
-    "extradata": f"0x{encoded_extradata}"
-}
+    # Step 4: Combine all the strings
+    encoded_extradata = zero_bytes_32 + all_signer_addresses + further_zero_bytes_65
 
-print(genesis_json)
+    # Step 5: Use the result in genesis.json (replace "your_extradata_value" with the encoded_extradata)
+    genesis_json = {
+        "extradata": f"0x{encoded_extradata}"
+    }
+
+    return genesis_json
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Generate extradata for adding to genesis.json")
+    parser.add_argument("-signer_addresses", required=True, help="Signer Address or several addresses separated by ,")
+    args = parser.parse_args()
+    signer_addresses = []
+
+    if ',' in args.signer_addresses:
+        for item in args.signer_addresses.split(','):
+            signer_addresses.append(item)
+    else:
+        signer_addresses.append(args.signer_addresses)
+
+    print(process(signer_addresses))
+
+
+if __name__ == "__main__":
+    main()
