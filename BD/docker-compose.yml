@@ -5,7 +5,7 @@ services:
     image: postgres:latest
     container_name: pg
     environment:
-      POSTGRES_DB: postgres
+      POSTGRES_DB: ETHEREUM_NODES
       POSTGRES_USER: ether
       POSTGRES_PASSWORD: softclaw
     ports:

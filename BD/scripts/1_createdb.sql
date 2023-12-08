@@ -1,17 +1,15 @@
 -- createdb.sql
-CREATE DATABASE ethereumnodes;
+CREATE DATABASE ETHEREUM_NODES;
 
-\c ethereumnodes
-
-CREATE TABLE public.nodes (
-	id INT PRIMARY KEy GENERATED ALWAYS AS IDENTITY,
-	name_node varchar(100) NULL,
-	n_red varchar(5) NULL,
+CREATE TABLE PUBLIC.NODES (
+	id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+	name_node VARCHAR(100) NULL,
+	n_red VARCHAR(5) NULL,
 	category_node INT NOT NULL DEFAULT 1,
     category_rpc INT ,
     category_miner INT ,
-	date_creation timestamp NULL,
-	date_deleted timestamp NULL,
+	date_creation TIMESTAMP NULL,
+	date_deleted TIMESTAMP NULL,
 	node_active INT NULL,
 	updated INT NULL
 );

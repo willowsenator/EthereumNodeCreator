@@ -2,9 +2,9 @@
 
 const { Pool } = require("pg");
 const pool = new Pool({
-    user: "postgres",
-    password: "cesta",
-    database: "ethereumnodes",
+    user: "ether",
+    password: "softclaw",
+    database: "ETHEREUM_NODES",
     host: "localhost",
     port: 5432
 });
