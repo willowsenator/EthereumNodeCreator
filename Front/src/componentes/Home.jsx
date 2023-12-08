@@ -13,10 +13,13 @@ export function Home() {
                 <Header/>
                 {/* Enlace a Transferencia */}
                 <nav>
-                    <Link to="/transferencia">Ir a Transferencia</Link>
+                
+                    <Link className="link-style" to="/transferencia">Transferencia</Link>
+                    <Link className="link-style" to="/NodeCreator">NodeCreator</Link>
+                    <Link className="link-style" to="/Explorador">Explorador</Link>
                 </nav>
                 <Routes>
-                    <Route path="/" element={<Body />} />
+                    <Route path="/NodeCreator" element={<Body />} />
                     <Route path="/transferencia" element={<Transferencia />} />
                 </Routes>
                 <Footer/>
