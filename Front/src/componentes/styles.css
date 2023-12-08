@@ -86,6 +86,7 @@ footer {
 .submit-btn:hover {
   background-color: #45a049;
 }
+
 .link-style {
   display: inline-block;
   margin: 10px;
@@ -93,7 +94,7 @@ footer {
   background-color: #333;
   border-radius: 5px;
   text-decoration: none;
-  color: #ffffff;
+  color: #fff;
   font-weight: bold;
 }
 
