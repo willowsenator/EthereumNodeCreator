@@ -5,4 +5,4 @@ custom_blockchain/node02
 custom_blockchain/node03
 
 # Networks
-networks/*
+custom_blockchain/networks/*
