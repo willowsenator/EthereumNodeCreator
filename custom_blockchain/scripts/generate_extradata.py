@@ -1,4 +1,5 @@
 import argparse
+import json
 
 
 # Generate extradata for adding to genesis.json
@@ -21,7 +22,7 @@ def process(signer_addresses):
         "extradata": f"0x{encoded_extradata}"
     }
 
-    return genesis_json
+    return json.dumps(genesis_json)
 
 
 def main():

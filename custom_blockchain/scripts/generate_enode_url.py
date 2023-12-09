@@ -12,13 +12,7 @@ def generate_enode_command(key_file_path, ip, tcp, udp):
 
 
 def invoke_enode_command(command):
-    try:
-        if command:  # Check if the command is not None or empty
-            subprocess.run(command, check=True)
-        else:
-            print("Command is empty or None.")
-    except subprocess.CalledProcessError as e:
-        print(f"Error: {e}")
+    subprocess.run(command, check=True)
 
 
 def main():
