@@ -40,12 +40,45 @@ def generate_extradata_command(signers):
     return command
 
 
+def generate_init_node_command(datadir, args):
+    genesis_path = os.path.join(base_directory, networks_directory, args.network_id, 'genesis.json')
+    command = ['geth', 'init', '--datadir', datadir, genesis_path]
+    return command
+
+
 def invoke_command(command):
     subprocess.run(command, check=True)
 
 
 def get_output_command(command):
     return subprocess.check_output(command, universal_newlines=True)
+
+
+def init_nodes(args):
+    init_rpc_nodes(args)
+    init_miner_nodes(args)
+    init_common_nodes(args)
+
+
+def init_rpc_nodes(args):
+    path = os.path.join(base_directory, networks_directory, args.network_id, rpc_nodes_directory)
+    for i in range(int(args.num_rpc_nodes)):
+        current_path = os.path.join(path, f"{rpc_node_name}{i}")
+        init_node(current_path, args)
+
+
+def init_miner_nodes(args):
+    path = os.path.join(base_directory, networks_directory, args.network_id, miner_nodes_directory)
+    for i in range(int(args.num_miner_nodes)):
+        current_path = os.path.join(path, f"{miner_node_name}{i}")
+        init_node(current_path, args)
+
+
+def init_common_nodes(args):
+    path = os.path.join(base_directory, networks_directory, args.network_id, common_nodes_directory)
+    for i in range(int(args.num_common_nodes)):
+        current_path = os.path.join(path, f"{common_node_name}{i}")
+        init_node(current_path, args)
 
 
 def create_network(args):
@@ -66,6 +99,7 @@ def create_network(args):
         create_miner_nodes(args)
         create_common_nodes(args)
         generate_custom_genesis(args)
+        init_nodes(args)
 
 
 def create_new_account(path):
@@ -158,6 +192,11 @@ def get_all_signers_addresses_without_0x_from_miners_nodes(args):
 def get_extradata(signers):
     command = generate_extradata_command(signers)
     return json.loads(get_output_command(command))["extradata"]
+
+
+def init_node(datadir, args):
+    command = generate_init_node_command(datadir, args)
+    invoke_command(command)
 
 
 def main():
