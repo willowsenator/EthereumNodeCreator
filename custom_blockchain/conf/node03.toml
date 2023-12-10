@@ -23,6 +23,7 @@ RPCEVMTimeout = 5000000000
 RPCTxFeeCap = 1e+00
 
 [Eth.Miner]
+Etherbase = "0x2d862b18bc5816b438c49931f8264926c2144190"
 GasFloor = 0
 GasCeil = 30000000
 GasPrice = 1000000000
@@ -58,7 +59,6 @@ IgnorePrice = 2
 [Node]
 DataDir = "node03"
 IPCPath = "geth.ipc"
-HTTPCors = ["*"]
 HTTPPort = 8549
 HTTPVirtualHosts = ["localhost"]
 HTTPModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
@@ -77,7 +77,9 @@ NoDiscovery = false
 DiscoveryV4 = true
 BootstrapNodes = []
 BootstrapNodesV5 = []
-StaticNodes = ["enode://7b7cb0d1a77e765c82477c47a68ca4c4ad6898b1bfb42c3e134eeeef3c1cb733b828974d6d2c65ef4f99c0f7530b078c199b651eae9b06beb41cc73122553d04@127.0.0.1:30303", "enode://1512ccd0e9451d245060bc4fc7635ee7b14139f668185e7caab24e1e355ede584007926a2de7c2a5063e84226b99ee216d3bb0d4ce42413d01c058ab3fef34db@127.0.0.1:30304","enode://ed4a5388fa885dcf3a2e8e3e9d1fe83bff006a3792ff2876ade1d94949993a3f11434e0b337d7345147af87241aa79281c2e6eddbe76198ce7cca1a4fe210fed@127.0.0.1:30305"]
+StaticNodes = ["enode://01b73aae7eac71a7795b2cf115de9ce0d3358f1906d4eb0551929a233749f4283dfe73e6a1db5c95980c3e78f2e98d7ca32d3262a991d4c8078ec2a174ffd02a@127.0.0.1:30303",
+"enode://dcd5f127c4a5cefba205d7b380dc7dc6b6026e614909787daf38f6de94ee2ba768140dd2f8a39bc9354da46ab3cda9328db11debaa9961139962531a8845e3f5@127.0.0.1:30304",
+"enode://7583eba74fe3080075214e652c0ddb1c498faa63362a583244c16073c58b9b7e9b9679db5f6e48c9a9771ef4716be10bc8b581a90ce67a05772df60445e7e18a@127.0.0.1:30305"]
 TrustedNodes = []
 ListenAddr = ":30305"
 DiscAddr = ""

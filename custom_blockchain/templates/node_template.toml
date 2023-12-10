@@ -1,6 +1,6 @@
 [Eth]
-NetworkId = 90000
-SyncMode = "full"
+NetworkId = %NETWORK_ID%
+SyncMode = "%SYNC_MODE%"
 EthDiscoveryURLs = []
 SnapDiscoveryURLs = []
 NoPruning = false
@@ -23,7 +23,7 @@ RPCEVMTimeout = 5000000000
 RPCTxFeeCap = 1e+00
 
 [Eth.Miner]
-Etherbase="0x8043e40446e8f377D2beC152fF4Bf471d12555FD"
+%ETHER_BASE%
 GasFloor = 0
 GasCeil = 30000000
 GasPrice = 1000000000
@@ -57,16 +57,18 @@ MaxPrice = 500000000000
 IgnorePrice = 2
 
 [Node]
-DataDir = "node02"
+DataDir = "%NODE_NAME%"
 IPCPath = "geth.ipc"
 HTTPCors = ["*"]
-HTTPPort = 8547
+HTTPHost = "localhost"
+HTTPPort = %HTTP_PORT%
 HTTPVirtualHosts = ["localhost"]
 HTTPModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
 AuthAddr = "localhost"
-AuthPort = 8552
+AuthPort = %AUTH_PORT%
 AuthVirtualHosts = ["localhost"]
-WSPort = 8548
+WSHost = ""
+WSPort = %WS_PORT%
 WSModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
 GraphQLVirtualHosts = ["localhost"]
 BatchRequestLimit = 1000
@@ -78,11 +80,9 @@ NoDiscovery = false
 DiscoveryV4 = true
 BootstrapNodes = []
 BootstrapNodesV5 = []
-StaticNodes = ["enode://01b73aae7eac71a7795b2cf115de9ce0d3358f1906d4eb0551929a233749f4283dfe73e6a1db5c95980c3e78f2e98d7ca32d3262a991d4c8078ec2a174ffd02a@127.0.0.1:30303",
-"enode://dcd5f127c4a5cefba205d7b380dc7dc6b6026e614909787daf38f6de94ee2ba768140dd2f8a39bc9354da46ab3cda9328db11debaa9961139962531a8845e3f5@127.0.0.1:30304",
-"enode://7583eba74fe3080075214e652c0ddb1c498faa63362a583244c16073c58b9b7e9b9679db5f6e48c9a9771ef4716be10bc8b581a90ce67a05772df60445e7e18a@127.0.0.1:30305"]
+StaticNodes = [%STATIC_NODES%]
 TrustedNodes = []
-ListenAddr = ":30304"
+ListenAddr = ":%NODE_PORT%"
 DiscAddr = ""
 EnableMsgEvents = false
 
@@ -94,8 +94,8 @@ IdleTimeout = 120000000000
 
 [Metrics]
 HTTP = "127.0.0.1"
-Port = 6061
-InfluxDBEndpoint = "http://localhost:8087"
+Port = %METRICS_PORT%
+InfluxDBEndpoint = "http://localhost:%INFLUX_PORT%"
 InfluxDBDatabase = "geth"
 InfluxDBUsername = "test"
 InfluxDBPassword = "test"

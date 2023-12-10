@@ -1,4 +1,8 @@
-# custom blockchain
+# Custom blockchain
+
 custom_blockchain/node01
 custom_blockchain/node02
 custom_blockchain/node03
+
+# Networks
+custom_blockchain/networks/*
