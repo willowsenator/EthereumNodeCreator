@@ -66,9 +66,6 @@ HTTPModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
 AuthAddr = "localhost"
 AuthPort = 8551
 AuthVirtualHosts = ["localhost"]
-WSHost = ""
-WSPort = 8546
-WSModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
 GraphQLVirtualHosts = ["localhost"]
 BatchRequestLimit = 1000
 BatchResponseMaxSize = 25000000
@@ -92,15 +89,3 @@ ReadTimeout = 30000000000
 ReadHeaderTimeout = 30000000000
 WriteTimeout = 30000000000
 IdleTimeout = 120000000000
-
-[Metrics]
-HTTP = "127.0.0.1"
-Port = 6060
-InfluxDBEndpoint = "http://localhost:8086"
-InfluxDBDatabase = "geth"
-InfluxDBUsername = "test"
-InfluxDBPassword = "test"
-InfluxDBTags = "host=localhost"
-InfluxDBToken = "test"
-InfluxDBBucket = "geth"
-InfluxDBOrganization = "geth"

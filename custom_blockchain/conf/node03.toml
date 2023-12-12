@@ -59,15 +59,9 @@ IgnorePrice = 2
 [Node]
 DataDir = "node03"
 IPCPath = "geth.ipc"
-HTTPPort = 8549
-HTTPVirtualHosts = ["localhost"]
-HTTPModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
 AuthAddr = "localhost"
 AuthPort = 8553
 AuthVirtualHosts = ["localhost"]
-WSPort = 8550
-WSModules = ["admin","eth","miner","net","web3","clique","txpool","personal"]
-GraphQLVirtualHosts = ["localhost"]
 BatchRequestLimit = 1000
 BatchResponseMaxSize = 25000000
 
@@ -90,15 +84,3 @@ ReadTimeout = 30000000000
 ReadHeaderTimeout = 30000000000
 WriteTimeout = 30000000000
 IdleTimeout = 120000000000
-
-[Metrics]
-HTTP = "127.0.0.1"
-Port = 6062
-InfluxDBEndpoint = "http://localhost:8088"
-InfluxDBDatabase = "geth"
-InfluxDBUsername = "test"
-InfluxDBPassword = "test"
-InfluxDBTags = "host=localhost"
-InfluxDBToken = "test"
-InfluxDBBucket = "geth"
-InfluxDBOrganization = "geth"
