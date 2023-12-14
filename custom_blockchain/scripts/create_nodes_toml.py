@@ -29,6 +29,7 @@ etherbase = "Etherbase="
 # NodeTypes
 miner = "miner"
 rpc = "rpc"
+common_node = "node"
 
 
 def create_conf_directories(args):
@@ -68,10 +69,10 @@ def create_common_nodes_toml(args):
                                     common_nodes_directory)
     common_nodes_path = os.path.join(base_directory, networks_directory, args.network_id, common_nodes_directory)
     common_node_names = os.listdir(common_nodes_path)
-    create_current_toml(args, common_node_names, common_toml_path)
+    create_current_toml(args, common_node_names, common_toml_path, common_node)
 
 
-def create_current_toml(args, node_names, toml_path, node_type=""):
+def create_current_toml(args, node_names, toml_path, node_type):
     toml_template_path = os.path.join(base_directory, templates_directory, toml_template)
     with open(toml_template_path, "r") as file:
         content = file.read()
@@ -85,25 +86,77 @@ def create_current_toml(args, node_names, toml_path, node_type=""):
         print(f"Creado toml {current_node_toml_path}")
 
 
-def modified_toml_template(args, content, node_type, node_name):
-    modified_content = content.replace("%NETWORK_ID%", args.network_id)
-    if node_type == "miner":
-        current_miner_path = os.path.join(base_directory, networks_directory, args.network_id, miner_nodes_directory
-                                          , node_name, keystore_directory)
+def modified_ether_base_toml(args, content, node_type, node_name):
+    if node_type == miner:
+        current_miner_path = os.path.join(base_directory, networks_directory, args.network_id,
+                                          miner_nodes_directory, node_name, keystore_directory)
         current_miner_keystore = os.path.join(current_miner_path, os.listdir(current_miner_path)[0])
-        modified_content = modified_content.replace("%ETHER_BASE%",
-                                                    f'{etherbase}"{get_node_account(current_miner_keystore)}"')
+        modified_content = content.replace("%ETHER_BASE%",
+                                           f'{etherbase}"{get_node_account(current_miner_keystore)}"')
     else:
-        modified_content = modified_content.replace("%ETHER_BASE%", "")
+        modified_content = content.replace("%ETHER_BASE%", "")
+    return modified_content
 
-    modified_content = modified_content.replace("%NODE_NAME%", node_name)
 
-    if node_type == "rpc":
+def modified_network_id_toml(args, content):
+    return content.replace("%NETWORK_ID%", args.network_id)
+
+
+def modified_node_name_toml(content, node_name):
+    return content.replace("%NODE_NAME%", node_name)
+
+
+def modified_auth_ports(args, content, node_type, node_name):
+    if node_type == rpc:
         pattern_index = node_name[len(rpc_node_name):]
-        rpc_ports = get_rpc_ports(args)
-        modified_content = modified_content.replace("%HTTP_PORT%", f"{rpc_ports[int(pattern_index)]}")
+        auth_rpc_ports = get_ports(args.auth_rpc_ports)
+        modified_content = content.replace("%AUTH_PORT%", f"{auth_rpc_ports[int(pattern_index)]}")
+    elif node_type == miner:
+        pattern_index = node_name[len(miner_node_name):]
+        auth_miner_ports = get_ports(args.auth_miner_ports)
+        modified_content = content.replace("%AUTH_PORT%", f"{auth_miner_ports[int(pattern_index)]}")
     else:
-        modified_content = modified_content.replace("%HTTP_PORT%", "0")
+        pattern_index = node_name[len(common_node_name):]
+        auth_common_node_ports = get_ports(args.auth_common_node_ports)
+        modified_content = content.replace("%AUTH_PORT%", f"{auth_common_node_ports[int(pattern_index)]}")
+
+    return modified_content
+
+
+def modified_listen_ports(args, content, node_type, node_name):
+    if node_type == rpc:
+        pattern_index = node_name[len(rpc_node_name):]
+        listen_rpc_ports = get_ports(args.listen_rpc_ports)
+        modified_content = content.replace("%NODE_PORT%", f"{listen_rpc_ports[int(pattern_index)]}")
+    elif node_type == miner:
+        pattern_index = node_name[len(miner_node_name):]
+        listen_miner_ports = get_ports(args.listen_miner_ports)
+        modified_content = content.replace("%NODE_PORT%", f"{listen_miner_ports[int(pattern_index)]}")
+    else:
+        pattern_index = node_name[len(common_node_name):]
+        listen_common_node_ports = get_ports(args.listen_common_node_ports)
+        modified_content = content.replace("%NODE_PORT%", f"{listen_common_node_ports[int(pattern_index)]}")
+
+    return modified_content
+
+
+def modified_http_ports(args, content, node_type, node_name):
+    if node_type == rpc:
+        pattern_index = node_name[len(rpc_node_name):]
+        rpc_ports = get_ports(args.rpc_ports)
+        modified_content = content.replace("%HTTP_PORT%", f"{rpc_ports[int(pattern_index)]}")
+    else:
+        modified_content = content.replace("%HTTP_PORT%", "0")
+    return modified_content
+
+
+def modified_toml_template(args, content, node_type, node_name):
+    modified_content = modified_network_id_toml(args, content)
+    modified_content = modified_ether_base_toml(args, modified_content, node_type, node_name)
+    modified_content = modified_node_name_toml(modified_content, node_name)
+    modified_content = modified_http_ports(args, modified_content, node_type, node_name)
+    modified_content = modified_auth_ports(args, modified_content, node_type, node_name)
+    modified_content = modified_listen_ports(args, modified_content, node_type, node_name)
 
     return modified_content
 
@@ -136,35 +189,140 @@ def create_common_node_conf_directory(args):
 
 
 def validate(args):
+    validate_rpcs(args)
+    validate_miners(args)
+    validate_common_nodes(args)
+
+
+def validate_rpcs(args):
     validate_num_rpc_ports(args)
+    validate_num_auth_rpc_ports(args)
+    validate_num_listen_rpc_ports(args)
 
 
-def get_rpc_ports(args):
-    rpc_ports = []
-    if ',' in args.rpc_ports:
-        for item in args.rpc_ports.split(','):
-            rpc_ports.append(item)
+def validate_miners(args):
+    validate_num_auth_miner_ports(args)
+    validate_num_listen_miner_ports(args)
+
+
+def validate_common_nodes(args):
+    validate_num_auth_common_node_ports(args)
+    validate_num_listen_common_node_ports(args)
+
+
+def get_ports(values):
+    ports = []
+    if ',' in values:
+        for item in values.split(','):
+            ports.append(item)
     else:
-        rpc_ports.append(args.rpc_ports)
-    return rpc_ports
+        ports.append(values)
+    return ports
+
+
+def get_num_nodes(network_id, node_directory):
+    nodes_path = os.path.join(base_directory, networks_directory, network_id, node_directory)
+    nodes = os.listdir(nodes_path)
+    return len(nodes)
 
 
 def validate_num_rpc_ports(args):
-    rpc_nodes_path = os.path.join(base_directory, networks_directory, args.network_id, rpc_nodes_directory)
-    rpc_nodes = os.listdir(rpc_nodes_path)
-    rpc_ports = get_rpc_ports(args)
+    rpc_ports = get_ports(args.rpc_ports)
+    num_rpc_nodes = get_num_nodes(args.network_id, rpc_nodes_directory)
 
-    if not len(rpc_nodes) == len(rpc_ports):
+    if not num_rpc_nodes == len(rpc_ports):
         raise ValueError(
-            f"Num de puertos rpc tiene que ser igual al número de nodos rpc. Num nodos rpc: {len(rpc_nodes)}")
+            f"Num de puertos rpc tiene que ser igual al número de nodos rpc. Num nodos rpc: {num_rpc_nodes}")
+
+
+def validate_num_auth_rpc_ports(args):
+    auth_rpc_ports = get_ports(args.auth_rpc_ports)
+    num_rpc_nodes = get_num_nodes(args.network_id, rpc_nodes_directory)
+
+    if not num_rpc_nodes == len(auth_rpc_ports):
+        raise ValueError(
+            f"Num de puertos rpc auth tiene que ser igual al número de nodos rpc. Num nodos rpc: {num_rpc_nodes}")
+
+
+def validate_num_listen_rpc_ports(args):
+    listen_rpc_ports = get_ports(args.listen_rpc_ports)
+    num_rpc_nodes = get_num_nodes(args.network_id, rpc_nodes_directory)
+
+    if not num_rpc_nodes == len(listen_rpc_ports):
+        raise ValueError(
+            f"Num de puertos rpc de escucha tiene que ser igual al número de nodos rpc. "
+            f"Num nodos rpc: {num_rpc_nodes}")
+
+
+def validate_num_auth_miner_ports(args):
+    auth_miner_ports = get_ports(args.auth_miner_ports)
+    num_miner_nodes = get_num_nodes(args.network_id, miner_nodes_directory)
+
+    if not num_miner_nodes == len(auth_miner_ports):
+        raise ValueError(
+            f"Num de puertos mineros auth tiene que ser igual al número de nodos mineros. "
+            f"Num nodos mineros: {num_miner_nodes}")
+
+
+def validate_num_listen_miner_ports(args):
+    listen_miner_ports = get_ports(args.listen_miner_ports)
+    num_miner_nodes = get_num_nodes(args.network_id, miner_nodes_directory)
+
+    if not num_miner_nodes == len(listen_miner_ports):
+        raise ValueError(
+            f"Num de puertos mineros de escucha tiene que ser igual al número de nodos minero. "
+            f"Num nodos mineros: {num_miner_nodes}")
+
+
+def validate_num_auth_common_node_ports(args):
+    num_common_nodes = get_num_nodes(args.network_id, common_nodes_directory)
+    if num_common_nodes > 0:
+        if hasattr(args, "auth_common_node_ports") and getattr(args, "auth_common_node_ports") is not None:
+            auth_common_node_ports = get_ports(args.auth_common_node_ports)
+            print("Auth common node")
+            if not num_common_nodes == len(auth_common_node_ports):
+                raise ValueError(
+                    f"Num de puertos auth de nodo normal tiene que ser igual al número de nodos normales. "
+                    f"Num nodos normales: {num_common_nodes}")
+        else:
+            raise ValueError(
+                f"Num de puertos auth de nodo normal tiene que ser igual al número de nodos normales. "
+                f"Num nodos normales: {num_common_nodes}")
+
+
+def validate_num_listen_common_node_ports(args):
+    num_common_nodes = get_num_nodes(args.network_id, common_nodes_directory)
+    if num_common_nodes > 0:
+        if hasattr(args, "listen_common_node_ports") and getattr(args, "listen_common_node_ports") is not None:
+            listen_common_node_ports = get_ports(args.listen_common_node_ports)
+            print("Listen common node")
+
+            if not num_common_nodes == len(listen_common_node_ports):
+                raise ValueError(
+                    f"Num de puertos de nodos normales de escucha tiene que ser igual al número de nodos normales. "
+                    f"Num nodos normales: {num_common_nodes}")
+        else:
+            raise ValueError(
+                f"Num de puertos de nodos normales de escucha tiene que ser igual al número de nodos normales. "
+                f"Num nodos normales: {num_common_nodes}")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Generate nodes toml")
     parser.add_argument("-network_id", required=True, help="Network id for the network")
     parser.add_argument("-rpc_ports", required=True, help="Rpc port or several rpc ports separated by ,")
-    # parser.add_argument("-auth_ports", required=True, help="Auth port or several auth ports separated by ,")
-    # parser.add_argument("-nodes_ports", required=True, help="Node ports separated by ,")
+    parser.add_argument("-auth_rpc_ports", required=True, help="Auth rpc port or several auth rpc ports "
+                                                               "separated by ,")
+    parser.add_argument("-listen_rpc_ports", required=True, help="Listen rpc port or several listen rpc "
+                                                                 "ports separated by ,")
+    parser.add_argument("-auth_miner_ports", required=True, help="Auth miner port or several "
+                                                                 "auth miner ports separated by ,")
+    parser.add_argument("-listen_miner_ports", required=True, help="Listen miner port or several "
+                                                                   "listen miner ports separated by ,")
+    parser.add_argument("-auth_common_node_ports", help="Auth common node port or several "
+                                                        "auth common nodes ports separated by ,")
+    parser.add_argument("-listen_common_node_ports", help="Listen common node port or several "
+                                                          "listen common nodes ports separated by ,")
     args = parser.parse_args()
 
     validate(args)
