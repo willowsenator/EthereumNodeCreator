@@ -80,3 +80,28 @@ app.put('/api/modificar', async (req, res) => {
 app.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
 });     
+
+const express = require('express');
+const { exec } = require('child_process');
+
+const app = express();
+const port = 3000;
+
+//EndPoint creacion de la red
+app.post('/ejecutar-python', (req, res) => {
+    // Ejecutar el script de Python
+    exec('python generate_network.py -network_id, -num_rpc_nodes, -num_miner_nodes ', (error, stdout, stderr) => {
+        if (error) {
+            console.error(`Error al ejecutar el script: ${error}`);
+            res.status(500).send('Error interno del servidor');
+            return;
+        }
+
+        console.log(`Resultado del script: ${stdout}`);
+        res.send(`Resultado del script: ${stdout}`);
+    });
+});
+
+app.listen(port, () => {
+    console.log(`Servidor escuchando en http://localhost:${port}`);
+});
