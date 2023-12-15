@@ -14,6 +14,9 @@ common_nodes_directory = "nodes"
 templates_directory = "templates"
 keystore_directory = "keystore"
 conf_directory = "conf"
+geth_directory = "geth"
+
+node_key = "nodekey"
 
 # Prefix for the nodes names
 rpc_node_name = "rpc_"
@@ -150,6 +153,14 @@ def modified_http_ports(args, content, node_type, node_name):
     return modified_content
 
 
+def modified_static_boot_nodes(args, content):
+    static_boot_nodes_enode_urls = generate_enode_urls(args)
+    static_boot_nodes_enode_urls += "\n"
+
+    modified_content = content.replace("%STATIC_NODES%", static_boot_nodes_enode_urls)
+    return modified_content
+
+
 def modified_toml_template(args, content, node_type, node_name):
     modified_content = modified_network_id_toml(args, content)
     modified_content = modified_ether_base_toml(args, modified_content, node_type, node_name)
@@ -157,6 +168,7 @@ def modified_toml_template(args, content, node_type, node_name):
     modified_content = modified_http_ports(args, modified_content, node_type, node_name)
     modified_content = modified_auth_ports(args, modified_content, node_type, node_name)
     modified_content = modified_listen_ports(args, modified_content, node_type, node_name)
+    modified_content = modified_static_boot_nodes(args, modified_content)
 
     return modified_content
 
@@ -305,6 +317,76 @@ def validate_num_listen_common_node_ports(args):
             raise ValueError(
                 f"Num de puertos de nodos normales de escucha tiene que ser igual al número de nodos normales. "
                 f"Num nodos normales: {num_common_nodes}")
+
+
+def generate_enode_url_command(port, keyfile):
+    command = ["python3", "generate_enode_url.py", "-key_file", keyfile, "-tcp", port, "-udp", port]
+    return command
+
+
+def get_output_command(command):
+    return subprocess.check_output(command, universal_newlines=True)
+
+
+def get_enode_url(port, keyfile):
+    command = generate_enode_url_command(port, keyfile)
+    return get_output_command(command)
+
+
+def generate_enode_urls(args):
+    static_boot_nodes = generate_rpc_enode_urls(args)
+    static_boot_nodes += generate_miner_enode_urls(args)
+
+    num_common_nodes = get_num_nodes(args.network_id, common_nodes_directory)
+    if num_common_nodes > 0:
+        static_boot_nodes += generate_common_enode_urls(args)
+
+    return static_boot_nodes
+
+
+def generate_rpc_enode_urls(args):
+    boot_nodes = f"\n{generate_enode_urls_by_node_type(args.network_id, args.listen_rpc_ports, rpc)}"
+    return boot_nodes
+
+
+def generate_miner_enode_urls(args):
+    boot_nodes = f",\n{generate_enode_urls_by_node_type(args.network_id, args.listen_miner_ports, miner)}"
+    return boot_nodes
+
+
+def genrate_common_enode_urls(args):
+    boot_nodes = f",\n"
+    boot_nodes += generate_enode_urls_by_node_type(args.network_id, args.listen_common_node_ports,
+                                                   common_node)
+    return boot_nodes
+
+
+def generate_enode_urls_by_node_type(network_id, values, node_type):
+    path = os.path.join(base_directory, networks_directory, network_id)
+    if node_type == rpc:
+        path = os.path.join(path, rpc_nodes_directory)
+        node_name = rpc_node_name
+    elif node_type == miner:
+        path = os.path.join(path, miner_nodes_directory)
+        node_name = miner_node_name
+    else:
+        path = os.path.join(path, common_nodes_directory)
+        node_name = common_node_name
+
+    nodes = os.listdir(path)
+
+    static_boot_nodes = ""
+    index = 0
+    for item in nodes:
+        pattern_index = item[len(node_name):]
+        ports = get_ports(values)
+        current_node_key_path = os.path.join(path, item, geth_directory, node_key)
+        enode_url = get_enode_url(ports[int(pattern_index)], current_node_key_path)
+        if index > 0:
+            static_boot_nodes += ",\n"
+        static_boot_nodes += f'"{enode_url.strip()}"'
+        index += 1
+    return static_boot_nodes
 
 
 def main():
