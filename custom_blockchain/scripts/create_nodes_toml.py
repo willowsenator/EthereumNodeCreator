@@ -365,7 +365,7 @@ def generate_miner_enode_urls(args):
     return boot_nodes
 
 
-def genrate_common_enode_urls(args):
+def generate_common_enode_urls(args):
     boot_nodes = f",\n"
     boot_nodes += generate_enode_urls_by_node_type(args.network_id, args.listen_common_node_ports,
                                                    common_node)
