@@ -7,7 +7,7 @@ const db = require('./config');
 const app = express();
 const port = 3001;
 
- const pool = new Pool(db);
+const pool = new Pool(db);
 
 app.use(express.json());
 

@@ -1,59 +1,84 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import './styles.css';
 
 function Body() {
   const [networkId, setNetworkId] = useState('');
-  const [nodes, setNodes] = useState([]);
-
-  useEffect(() => {
-    // Realiza la solicitud para obtener los nodos desde el servidor
-    axios.get('/api/nodos')
-      .then(response => setNodes(response.data))
-      .catch(error => console.error('Error al obtener nodos:', error));
-  }, []); // El segundo parámetro es un arreglo vacío, ejecuta el efecto solo una vez al montar el componente
+  const [redId, setRedId] = useState('');
+  const [rpcNodeId, setRpcNodeId] = useState('');
+  const [minerNodeId, setMinerNodeId] = useState('');
+  const [normalNodeId, setNormalNodeId] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Número de Nodos:', networkId);
-    // Realiza la solicitud para insertar un nuevo nodo
+    // Aquí, en lugar de una llamada a la API, se manejaría toda la lógica para crear la red con los nodos.
     try {
-      await axios.post('/api/insertar', { nombre: 'Nombre Ejemplo', numeroRed: networkId });
-      // Actualiza la lista de nodos después de la inserción
-      // Puedes también recargar toda la página o manejarlo de manera más eficiente
-      // dependiendo de tu aplicación
-      // Aquí simplemente recargamos la página entera
-      window.location.reload();
+      const response = await axios.post('/api/create-network', {
+        networkId,
+        redId,
+        nodes: [
+          { id: rpcNodeId, type: 'RPC' },
+          { id: minerNodeId, type: 'Minero' },
+          { id: normalNodeId, type: 'Normal' }
+        ]
+      });
+      console.log(response.data);
+      // Manejo post-creación de la red...
     } catch (error) {
-      console.error('Error al insertar nodo:', error);
+      console.error('Hubo un error al crear la red:', error);
+      // Manejo del error...
     }
   };
 
   return (
     <div className="body-container">
-      <div className="network-form-container">
-        <form onSubmit={handleSubmit} className="network-form">
-          <div className="form-group">
-            <label htmlFor="networkId">Número de Nodos:</label>
-            <input
-              type="text"
-              id="networkId"
-              value={networkId}
-              onChange={(e) => setNetworkId(e.target.value)}
-              required
-            />
-          </div>
-          <button type="submit" className="submit-btn">Crear Red</button>
-        </form>
-      </div>
-      <div className="node-list-container">
-        <h2>Listado de Nodos</h2>
-        <ul>
-          {nodes.map(node => (
-            <li key={node.id}>{node.name_node} - Red: {node.n_red}</li>
-          ))}
-        </ul>
-      </div>
+      <form onSubmit={handleSubmit} className="network-form">
+        <div className="form-group"/>
+      
+        <div className="form-group">
+          <label htmlFor="redId">Id Red:</label>
+          <input
+            type="text"
+            id="redId"
+            value={redId}
+            onChange={(e) => setRedId(e.target.value)}
+            className="input-field"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="rpcNodeId"> Nodos RPC:</label>
+          <input
+            type="text"
+            id="rpcNodeId"
+            value={rpcNodeId}
+            onChange={(e) => setRpcNodeId(e.target.value)}
+            className="input-field"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="minerNodeId">Nodos Mineros:</label>
+          <input
+            type="text"
+            id="minerNodeId"
+            value={minerNodeId}
+            onChange={(e) => setMinerNodeId(e.target.value)}
+            className="input-field"
+          />
+        </div>
+        <div className="form-group">
+          <label htmlFor="normalNodeId">Nodos Normales:</label>
+          <input
+            type="text"
+            id="normalNodeId"
+            value={normalNodeId}
+            onChange={(e) => setNormalNodeId(e.target.value)}
+            className="input-field"
+          />
+        </div>
+        <button type="submit" className="submit-btn">Crear Red</button>
+      </form>
+    
     </div>
   );
 }
