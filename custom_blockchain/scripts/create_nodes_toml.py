@@ -161,6 +161,16 @@ def modified_static_boot_nodes(args, content):
     return modified_content
 
 
+def modified_node_type(content, node_type):
+    if node_type == rpc:
+        modified_content = content.replace("%NODE_TYPE%", rpc_nodes_directory)
+    elif node_type == miner:
+        modified_content = content.replace("%NODE_TYPE%", miner_nodes_directory)
+    else:
+        modified_content = content.replace("%NODE_TYPE%", common_nodes_directory)
+    return modified_content
+
+
 def modified_toml_template(args, content, node_type, node_name):
     modified_content = modified_network_id_toml(args, content)
     modified_content = modified_ether_base_toml(args, modified_content, node_type, node_name)
@@ -169,6 +179,7 @@ def modified_toml_template(args, content, node_type, node_name):
     modified_content = modified_auth_ports(args, modified_content, node_type, node_name)
     modified_content = modified_listen_ports(args, modified_content, node_type, node_name)
     modified_content = modified_static_boot_nodes(args, modified_content)
+    modified_content = modified_node_type(modified_content, node_type)
 
     return modified_content
 
