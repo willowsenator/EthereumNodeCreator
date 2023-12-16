@@ -157,8 +157,8 @@ def generate_custom_genesis(args):
 
 
 def get_address_from_first_rpc_node(args):
-    path = os.path.join(base_directory, networks_directory, args.network_id, rpc_nodes_directory, f"{rpc_node_name}0"
-                        , keystore_directory)
+    path = os.path.join(base_directory, networks_directory, args.network_id, rpc_nodes_directory,
+                        f"{rpc_node_name}0", keystore_directory)
 
     path = os.path.join(path, os.listdir(path)[0])
 

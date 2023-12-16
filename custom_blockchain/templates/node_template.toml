@@ -57,8 +57,8 @@ MaxPrice = 500000000000
 IgnorePrice = 2
 
 [Node]
-DataDir = "%NODE_NAME%"
-IPCPath = "geth.ipc"
+DataDir = "%NODE_TYPE%/%NODE_NAME%"
+IPCPath = "%NODE_TYPE%/%NODE_NAME%/geth.ipc"
 HTTPCors = ["*"]
 HTTPHost = "localhost"
 # Parámetro RPC 0 para el resto de nodos y un valor concreto para RPC
