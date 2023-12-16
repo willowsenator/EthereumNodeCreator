@@ -302,7 +302,6 @@ def validate_num_auth_common_node_ports(args):
     if num_common_nodes > 0:
         if hasattr(args, "auth_common_node_ports") and getattr(args, "auth_common_node_ports") is not None:
             auth_common_node_ports = get_ports(args.auth_common_node_ports)
-            print("Auth common node")
             if not num_common_nodes == len(auth_common_node_ports):
                 raise ValueError(
                     f"Num de puertos auth de nodo normal tiene que ser igual al número de nodos normales. "
@@ -318,7 +317,6 @@ def validate_num_listen_common_node_ports(args):
     if num_common_nodes > 0:
         if hasattr(args, "listen_common_node_ports") and getattr(args, "listen_common_node_ports") is not None:
             listen_common_node_ports = get_ports(args.listen_common_node_ports)
-            print("Listen common node")
 
             if not num_common_nodes == len(listen_common_node_ports):
                 raise ValueError(
