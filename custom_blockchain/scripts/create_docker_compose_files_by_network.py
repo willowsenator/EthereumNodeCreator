@@ -36,7 +36,18 @@ network_docker_name = "eth_net_"
 geth_image = "ethereum/client-go:stable"
 docker_compose_config = {
     'version': '3',
-    'services': {}
+    'services': {},
+    'networks': {
+        'my_network': {
+            'driver': 'bridge',
+            'ipam': {
+                'driver': 'default',
+                'config': [
+                    {'subnet': '192.168.220.0/24'}
+                ]
+            }
+        }
+    }
 }
 
 common_docker_compose_service_config = {
@@ -44,6 +55,7 @@ common_docker_compose_service_config = {
     'ports': [],
     'volumes': [],
     'command': '',
+    'networks': []
 }
 
 
@@ -202,6 +214,7 @@ def create_docker_compose_file(args, node_type):
         custom_docker_compose_service_config['ports'] = generate_docker_compose_ports_config(args, node_type, item)
         custom_docker_compose_service_config['command'] = generate_docker_compose_command_config(args, node_type, item)
         custom_docker_compose_service_config['volumes'] = generate_docker_compose_volumes_config(node_type)
+        custom_docker_compose_service_config['networks'] = ['my_network']
 
         custom_docker_compose_service_by_node_name[item] = custom_docker_compose_service_config
 
