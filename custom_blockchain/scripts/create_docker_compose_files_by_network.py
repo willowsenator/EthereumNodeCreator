@@ -36,16 +36,14 @@ network_docker_name = "eth_net_"
 geth_image = "ethereum/client-go:stable"
 docker_compose_config = {
     'version': '3',
-    'services': {},
-    'networks': {}
+    'services': {}
 }
 
 common_docker_compose_service_config = {
     'image': geth_image,
     'ports': [],
     'volumes': [],
-    'networks': [],
-    'command': ''
+    'command': '',
 }
 
 
@@ -54,7 +52,8 @@ def generate_rpc_command(rpc_config_toml):
 
 
 def generate_miner_command(miner_config_toml, account):
-    return f'--config {miner_config_toml} --allow-insecure-unlock --unlock "{account}" --password /pwd.txt  --mine'
+    return (f'--config {miner_config_toml} --allow-insecure-unlock --unlock "{account}" --password '
+            f'/{scripts_directory}/pwd.txt  --mine')
 
 
 def generate_common_node_command(common_node_config_toml):
@@ -119,27 +118,63 @@ def generate_docker_compose_ports_config(args, node_type, node_name):
     return ports
 
 
-def generate_docker_compose_command_config(node_type, node_name):
-    command = ""
+def get_account(key_store_path):
+    account_path = os.path.join(key_store_path, os.listdir(key_store_path)[0])
+    with open(account_path) as file:
+        json_data = json.load(file)
+    return f"0x{json_data['address']}"
+
+
+def generate_docker_compose_command_config(args, node_type, node_name):
     if node_type == rpc:
         rpc_toml_docker_path = os.path.join(conf_directory, rpc_nodes_directory, f"{node_name}.toml")
-        command = generate_rpc_command(rpc_toml_docker_path)
-    return command
+        return generate_rpc_command(rpc_toml_docker_path)
+    if node_type == miner:
+        miner_toml_docker_path = os.path.join(conf_directory, miner_nodes_directory, f"{node_name}.toml")
+        keystore_path = os.path.join(base_directory, networks_directory, args.network_id, miner_nodes_directory,
+                                     node_name, keystore_directory)
+        account = get_account(keystore_path)
+
+        return generate_miner_command(miner_toml_docker_path, account)
+    else:
+        common_node_toml_docker_path = os.path.join(conf_directory, common_nodes_directory, f"{node_name}.toml")
+        return generate_common_node_command(common_node_toml_docker_path)
 
 
 def generate_docker_compose_volumes_config(node_type):
-    volumes = []
+    current_node_config_path = os.path.join(".", conf_directory)
+    current_node_docker_config_path = os.path.join("/", conf_directory)
+
+    current_node_pwd_path = os.path.join(base_directory, base_directory, scripts_directory)
+    current_node_pwd_docker_path = os.path.join("/", scripts_directory)
+
     if node_type == rpc:
-        current_rpc_node_config_path = os.path.join(".", conf_directory)
-        current_rpc_node_docker_config_path = os.path.join("/", conf_directory)
 
         current_rpc_nodes_directory_path = os.path.join(".", rpc_nodes_directory)
         current_rpc_nodes_docker_directory_path = os.path.join("/", rpc_nodes_directory)
 
         volumes = [
-            f"{current_rpc_node_config_path}:{current_rpc_node_docker_config_path}",
+            f"{current_node_config_path}:{current_node_docker_config_path}",
             f"{current_rpc_nodes_directory_path}:{current_rpc_nodes_docker_directory_path}"
         ]
+    elif node_type == miner:
+        current_miner_nodes_directory_path = os.path.join(".", miner_nodes_directory)
+        current_miner_nodes_docker_directory_path = os.path.join("/", miner_nodes_directory)
+
+        volumes = [
+            f"{current_node_config_path}:{current_node_docker_config_path}",
+            f"{current_miner_nodes_directory_path}:{current_miner_nodes_docker_directory_path}",
+            f"{current_node_pwd_path}:{current_node_pwd_docker_path}"
+        ]
+    else:
+        current_common_nodes_directory_path = os.path.join(".", common_nodes_directory)
+        current_common_nodes_docker_directory_path = os.path.join("/", common_nodes_directory)
+
+        volumes = [
+            f"{current_node_config_path}:{current_node_docker_config_path}",
+            f"{current_common_nodes_directory_path}:{current_common_nodes_docker_directory_path}"
+        ]
+
     return volumes
 
 
@@ -165,18 +200,12 @@ def create_docker_compose_file(args, node_type):
         custom_docker_compose_service_config = common_docker_compose_service_config.copy()
 
         custom_docker_compose_service_config['ports'] = generate_docker_compose_ports_config(args, node_type, item)
-        custom_docker_compose_service_config['command'] = generate_docker_compose_command_config(node_type, item)
+        custom_docker_compose_service_config['command'] = generate_docker_compose_command_config(args, node_type, item)
         custom_docker_compose_service_config['volumes'] = generate_docker_compose_volumes_config(node_type)
-        custom_docker_compose_service_config['networks'] = [f"{network_docker_name}{args.network_id}"]
 
         custom_docker_compose_service_by_node_name[item] = custom_docker_compose_service_config
 
     custom_docker_compose_config['services'] = custom_docker_compose_service_by_node_name
-    custom_docker_compose_config['networks'] = {
-        f"{network_docker_name}{args.network_id}": {
-            'driver': 'bridge'
-        }
-    }
 
     with open(docker_compose_path, "w") as file:
         yaml.safe_dump(custom_docker_compose_config, file)
