@@ -3,6 +3,7 @@ import os
 import subprocess
 import shutil
 import json
+import netifaces as ni
 
 # Directories for network and nodes types
 base_directory = ".."
@@ -33,6 +34,11 @@ etherbase = "Etherbase="
 miner = "miner"
 rpc = "rpc"
 common_node = "node"
+
+
+def get_ip_address(interface):
+    ip = ni.ifaddresses(interface)[ni.AF_INET][0]['addr']
+    return ip
 
 
 def create_conf_directories(args):
@@ -329,7 +335,8 @@ def validate_num_listen_common_node_ports(args):
 
 
 def generate_enode_url_command(port, keyfile):
-    command = ["python3", "generate_enode_url.py", "-key_file", keyfile, "-tcp", port, "-udp", port]
+    command = ["python3", "generate_enode_url.py", "-key_file", keyfile, "-ip", get_ip_address("eth0"),
+               "-tcp", port, "-udp", port]
     return command
 
 
