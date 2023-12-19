@@ -92,3 +92,22 @@ history
    91  docker ps
    92  docker exec
    93  docker exec -it 35b bash
+   
+  193 cd EthereumNodeCreator
+  195  git branch
+  196  git pull
+  197  ls
+  198  cd custom_blockchain
+  199  cd scripts
+  200  ls
+  201  python3 generate_network.py
+  202  python3 generate_network.py -h
+  203  python3 generate_network.py -network_id 112233 --num_rpc_nodes 3 -num_miner_nodes 3
+  204  python3 generate_network.py -network_id 112233 -num_rpc_nodes 3 -num_miner_nodes 3
+  205  python3 generate_network.py -network_id 112233 -num_rpc_nodes 3 -num_miner_nodes 3 -num_common_nodes 0
+  206  ls
+  207  python3 create_nodes_toml.py
+  208  python3 create_nodes_toml.py -h
+  209  python3 create_nodes_toml.py -network_id 112233 -rpc_ports 1000,2000,3000 -auth_rpc_ports 4000,5000,6000  -listen_rpc_ports 30300,30301,30302 -auth_miner_ports 7000,8000,9000 -listen_miner_ports 30303,30304,30305
+  210  ls
+  211  cat ../networks/112233/conf/rpcs/rpc_2.toml
